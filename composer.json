@@ -1,0 +1,23 @@
+{
+    "name": "sule/tddg",
+    "description": "",
+    "authors": [
+        {
+            "name": "Sulaeman",
+            "email": "me@sulaeman.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.7",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Sule\\Tddg": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
