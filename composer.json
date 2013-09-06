@@ -12,9 +12,7 @@
         "illuminate/support": "4.0.x"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
+        "classmap": [],
         "psr-0": {
             "Sule\\Tddg": "src/"
         }
