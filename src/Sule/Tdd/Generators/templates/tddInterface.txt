@@ -2,7 +2,7 @@
 
 use {{model}};
 
-interface {{className}}InterfaceTemplate
+interface {{className}}Interface{{classSuffix}}
 {
     
     /**
@@ -12,7 +12,6 @@ interface {{className}}InterfaceTemplate
      * @return void
      */
     public function setData({{model}} $data);
-
     {{methods}}
 
     /**

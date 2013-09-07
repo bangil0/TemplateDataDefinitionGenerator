@@ -183,45 +183,28 @@ class Generator
      * Compile templates and generate
      *
      * @param  string  $path
+     * @param  string  $classSuffix
      * @param  boolean $removeSSuffixFromTableName
-     * @return boolean
+     * @return array
      */
-    public function make($path, $removeSSuffixFromTableName = false)
+    public function make($path, $classSuffix, $removeSSuffixFromTableName = false)
     {
         $this->tables = $this->getTables();
 
+        $errors = array();
+
         if ( ! empty($this->tables)) {
             foreach ($this->tables as $table) {
-                $name = current($table);
-                $name = ucwords(str_replace('_', ' ', $name));
-
-                if ($removeSSuffixFromTableName) {
-                    $words = explode(' ', $name);
-
-                    foreach ($words as $index => $word) {
-                        $words[$index] = rtrim($word, 's');
-                    }
-
-                    $name = implode(' ', $words);
-
-                    unset($words);
-                }
-
-                $name = str_replace(' ', '', $name);
-
-                $this->makeItem($path, $name);
+                $errors = array_merge(
+                    $errors, 
+                    $this->makeItem($path, current($table), $classSuffix, $removeSSuffixFromTableName)
+                );
             }
+        } else {
+            $errors[] = 'No table could be found in current database';
         }
 
-        // $this->name = basename($path, '.php');
-        // $this->path = $this->getPath($path);
-        // $template   = $this->getTemplate($template, $this->name);
-
-        // if ( ! $this->file->exists($this->path)) {
-        //     return $this->file->put($this->path, $template) !== false;
-        // }
-
-        return false;
+        return $errors;
     }
 
     /**
@@ -229,21 +212,104 @@ class Generator
      *
      * @param  string $path
      * @param  string $name
-     * @return boolean
+     * @param  string  $classSuffix
+     * @param  boolean $removeSSuffixFromTableName
+     * @return array
      */
-    public function makeItem($path, $name)
+    public function makeItem($path, $name, $classSuffix, $removeSSuffixFromTableName = false)
     {
+        $className = $this->formatName($name, $removeSSuffixFromTableName);
+
         $data = array(
-            'model' => $name,
-            'className' => $name
+            'model'       => $className,
+            'className'   => $className,
+            'classSuffix' => $classSuffix
         );
 
         $template                = $this->getTemplate($data);
         $templateInterface       = $this->getTemplateInterface($data);
-        $templateMethod          = $this->getTemplateMethod($data);
-        $templateMethodInterface = $this->getTemplateMethodInterface($data);
+        $templateMethod          = '';
+        $templateMethodInterface = '';
 
-        return false;
+        $columns = $this->getColumns($name);
+
+        // Generate all the methods
+        if ( ! empty($columns)) {
+            foreach ($columns as $column) {
+                $data = array(
+                    'column'       => $column->Field,
+                    'columnMethod' => $this->formatName($column->Field)
+                );
+
+                $templateMethod          .= $this->getTemplateMethod($data)."\n";
+                $templateMethodInterface .= $this->getTemplateMethodInterface($data)."\n";
+            }
+        }
+
+        unset($columns);
+
+        $template = $this->compileTemplate($template, array(
+            'methods' => $templateMethod
+        ));
+
+        $templateInterface = $this->compileTemplate($templateInterface, array(
+            'methods' => $templateMethodInterface
+        ));
+
+        unset($templateMethod);
+        unset($templateMethodInterface);
+
+        $errors = array();
+
+        $filePath = $path.'/'.$className.$classSuffix.'.php';
+        
+        if ( ! $this->getFile()->exists($filePath)) {
+            if (false === $this->getFile()->put($filePath, $template)) {
+                $errors[] = 'Unable to create '.$filePath;
+            }
+        } else {
+            $errors[] = $filePath.' is already exist.';
+        }
+
+        $filePath = $path.'/'.$className.'Interface'.$classSuffix.'.php';
+
+        if ( ! $this->getFile()->exists($filePath)) {
+            if (false === $this->getFile()->put($filePath, $templateInterface)) {
+                $errors[] = 'Unable to create '.$filePath;
+            }
+        } else {
+            $errors[] = $filePath.' is already exist.';
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Convert table name into a class name
+     *
+     * @param  string  $name
+     * @param  boolean $removeSSuffixFromTableName
+     * @return string
+     */
+    protected function formatName($name, $removeSSuffixFromTableName = false)
+    {
+        $name = ucwords(str_replace('_', ' ', $name));
+
+        $words = explode(' ', $name);
+
+        if ($removeSSuffixFromTableName) {
+            foreach ($words as $index => $word) {
+                $words[$index] = rtrim($word, 's');
+            }
+        }
+
+        $words[0] = strtolower($words[0]);
+
+        $name = implode(' ', $words);
+
+        unset($words);
+
+        return str_replace(' ', '', $name);
     }
 
     /**
@@ -254,6 +320,19 @@ class Generator
     protected function getTables()
     {
         $sql = 'SHOW TABLES';
+
+        return $this->getDB()->select($sql);
+    }
+
+    /**
+     * Get all available column in a table
+     *
+     * @param  string $tableName
+     * @return array
+     */
+    protected function getColumns($tableName)
+    {
+        $sql = 'SHOW FIELDS FROM '.$tableName;
 
         return $this->getDB()->select($sql);
     }

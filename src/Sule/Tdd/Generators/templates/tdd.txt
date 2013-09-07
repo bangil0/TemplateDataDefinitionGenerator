@@ -2,7 +2,7 @@
 
 use {{model}};
 
-class {{className}}Template implements {{className}}InterfaceTemplate
+class {{className}}{{classSuffix}} implements {{className}}Interface{{classSuffix}}
 {
     
     /**
@@ -22,7 +22,6 @@ class {{className}}Template implements {{className}}InterfaceTemplate
     {
         $this->data = $data;
     }
-
     {{methods}}
 
     /**

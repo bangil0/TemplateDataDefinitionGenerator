@@ -67,6 +67,7 @@ class TddGeneratorCommand extends Command
         $templateInterface          = $this->option('templateInterface');
         $templateMethod             = $this->option('templateMethod');
         $templateMethodInterface    = $this->option('templateMethodInterface');
+        $classSuffix                = $this->option('classSuffix');
         $removeSSuffixFromTableName = $this->option('removeSSuffixFromTableName');
 
         if ($removeSSuffixFromTableName == 'Yes') {
@@ -84,7 +85,7 @@ class TddGeneratorCommand extends Command
             $templateMethodInterface
         );
 
-        $this->printResult($generator->make($path, $removeSSuffixFromTableName), $path);
+        $this->printResult($generator->make($path, $classSuffix, $removeSSuffixFromTableName), $path);
 
         unset($generator);
     }
@@ -92,17 +93,19 @@ class TddGeneratorCommand extends Command
     /**
      * Provide user feedback, based on success or not.
      *
-     * @param  boolean $successful
+     * @param  array  $errors
      * @param  string $path
      * @return void
      */
-    protected function printResult($successful, $path)
+    protected function printResult($errors, $path)
     {
-        if ($successful) {
-            return $this->info("Created {$path}");
+        if (empty($errors)) {
+            return $this->info("All classes succesfully created in {$path}");
         }
 
-        $this->error("Could not create {$path}");
+        foreach ($errors as $error) {
+            $this->error($error);
+        }
     }
 
     /**
@@ -157,6 +160,13 @@ class TddGeneratorCommand extends Command
                 InputOption::VALUE_OPTIONAL, 
                 'Path to template method interface.', 
                 __DIR__.'/../Generators/templates/tddMethodInterface.txt'
+            ),
+            array(
+                'classSuffix', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Set the class name suffix', 
+                'Template'
             ),
             array(
                 'removeSSuffixFromTableName', 
