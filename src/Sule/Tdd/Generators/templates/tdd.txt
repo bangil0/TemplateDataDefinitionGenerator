@@ -1,0 +1,41 @@
+<?php
+
+use {{model}};
+
+class {{className}}Template implements {{className}}InterfaceTemplate
+{
+    
+    /**
+     * The data.
+     *
+     * @var {{model}}
+     */
+    protected $data;
+
+    /**
+     * Set the data.
+     *
+     * @param {{model}} $data
+     * @return void
+     */
+    public function setData({{model}} $data)
+    {
+        $this->data = $data;
+    }
+
+    {{methods}}
+
+    /**
+     * Create a new instance of the given template.
+     *
+     * @return {{className}}Template | static
+     */
+    public function newInstance()
+    {
+        // This method just provides a convenient way for us to generate fresh template
+        // instances of this current template. It is particularly useful during the
+        // hydration of new objects.
+        return new static();
+    }
+
+}

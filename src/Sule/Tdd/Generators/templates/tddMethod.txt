@@ -1,0 +1,15 @@
+
+    /**
+     * Return the {{column}} data.
+     *
+     * @return mixed
+     */
+    public function {{columnMethod}}()
+    {
+        if ( ! is_null($this->data)) {
+            return $this->data->getAttribute('{{column}}');
+        }
+        
+        return false;
+    }
+

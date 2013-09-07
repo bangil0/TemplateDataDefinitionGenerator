@@ -1,10 +1,15 @@
-<?php namespace Sule\Tdd\Commands;
+<?php
+namespace Sule\Tdd\Commands;
 
 use Illuminate\Console\Command;
+
+use Sule\Tdd\Generators\Generator;
+
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class TddGeneratorCommand extends Command {
+class TddGeneratorCommand extends Command
+{
 
     /**
      * The console command name.
@@ -30,11 +35,24 @@ class TddGeneratorCommand extends Command {
     /**
      * Create a new command instance.
      *
+     * @param  Sule\Tdd\Generators\Generator $generator
      * @return void
      */
-    public function __construct()
+    public function __construct(Generator $generator)
     {
         parent::__construct();
+
+        $this->generator = $generator;
+    }
+
+    /**
+     * Return the generator.
+     *
+     * @return Sule\Tdd\TddGenerator
+     */
+    protected function getGenerator()
+    {
+        return $this->generator;
     }
 
     /**
@@ -44,10 +62,31 @@ class TddGeneratorCommand extends Command {
      */
     public function fire()
     {
-        $path = $this->getPath();
-        $template = $this->option('template');
+        $path                       = $this->option('path');
+        $template                   = $this->option('template');
+        $templateInterface          = $this->option('templateInterface');
+        $templateMethod             = $this->option('templateMethod');
+        $templateMethodInterface    = $this->option('templateMethodInterface');
+        $removeSSuffixFromTableName = $this->option('removeSSuffixFromTableName');
 
-        $this->printResult($this->generator->make($path, $template), $path);
+        if ($removeSSuffixFromTableName == 'Yes') {
+            $removeSSuffixFromTableName = true;
+        } else {
+            $removeSSuffixFromTableName = false;
+        }
+
+        $generator = $this->getGenerator();
+
+        $generator->setTemplates(
+            $template, 
+            $templateInterface, 
+            $templateMethod, 
+            $templateMethodInterface
+        );
+
+        $this->printResult($generator->make($path, $removeSSuffixFromTableName), $path);
+
+        unset($generator);
     }
 
     /**
@@ -64,16 +103,6 @@ class TddGeneratorCommand extends Command {
         }
 
         $this->error("Could not create {$path}");
-    }
-
-    /**
-     * Get the path to the file that should be generated.
-     *
-     * @return string
-     */
-    protected function getPath()
-    {
-        return $this->option('path') . '/' . ucwords($this->argument('name')) . '.php';
     }
 
     /**
@@ -94,8 +123,48 @@ class TddGeneratorCommand extends Command {
     protected function getOptions()
     {
         return array(
-            array('path', null, InputOption::VALUE_OPTIONAL, 'Path to the models directory.', app_path() . '/models'),
-            array('template', null, InputOption::VALUE_OPTIONAL, 'Path to template.', __DIR__.'/../Generators/templates/model.txt')
+            array(
+                'path', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Path to the templates directory.', 
+                app_path() . '/templates'
+            ),
+            array(
+                'template', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Path to template.', 
+                __DIR__.'/../Generators/templates/tdd.txt'
+            ),
+            array(
+                'templateInterface', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Path to template interface.', 
+                __DIR__.'/../Generators/templates/tddInterface.txt'
+            ),
+            array(
+                'templateMethod', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Path to template method.', 
+                __DIR__.'/../Generators/templates/tddMethod.txt'
+            ),
+            array(
+                'templateMethodInterface', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Path to template method interface.', 
+                __DIR__.'/../Generators/templates/tddMethodInterface.txt'
+            ),
+            array(
+                'removeSSuffixFromTableName', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Remove last "s" char from each table name word? Yes | No.', 
+                'No'
+            )
         );
     }
 

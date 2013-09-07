@@ -23,23 +23,29 @@ class TddServiceProvider extends ServiceProvider
 	protected $defer = false;
 
 	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-		$this->package('sule/tdd');
-	}
-
-	/**
 	 * Register the service provider.
 	 *
 	 * @return void
 	 */
 	public function register()
 	{
-		
+		$this->registerTddGenerator();
+		$this->registerCommands();
+	}
+
+	/**
+	 * Register generate:tdd
+	 *
+	 * @return Commands\TddGeneratorCommand
+	 */
+	protected function registerTddGenerator()
+	{
+		$this->app['generate.tdd'] = $this->app->share(function($app)
+		{
+			$generator = new Generators\Generator($app['db'], $app['files']);
+
+			return new Commands\TddGeneratorCommand($generator);
+		});
 	}
 
 	/**
@@ -49,17 +55,7 @@ class TddServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-        
+        $this->commands('generate.tdd');
     }
-
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('tdd');
-	}
 
 }

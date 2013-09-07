@@ -1,0 +1,25 @@
+<?php
+
+use {{model}};
+
+interface {{className}}InterfaceTemplate
+{
+    
+    /**
+     * Set the data.
+     *
+     * @param {{model}} $data
+     * @return void
+     */
+    public function setData({{model}} $data);
+
+    {{methods}}
+
+    /**
+     * Create a new instance of the given template.
+     *
+     * @return {{className}}Template | static
+     */
+    public function newInstance();
+
+}

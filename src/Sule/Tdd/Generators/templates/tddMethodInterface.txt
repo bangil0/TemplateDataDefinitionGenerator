@@ -1,0 +1,8 @@
+
+    /**
+     * Return the {{column}} data.
+     *
+     * @return mixed
+     */
+    public function {{columnMethod}}();
+
