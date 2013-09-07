@@ -1,5 +1,5 @@
 {
-    "name": "sule/tddg",
+    "name": "sule/tdd",
     "description": "",
     "authors": [
         {
@@ -14,7 +14,7 @@
     "autoload": {
         "classmap": [],
         "psr-0": {
-            "Sule\\Tddg": "src/"
+            "Sule\\Tdd": "src/"
         }
     },
     "minimum-stability": "dev"

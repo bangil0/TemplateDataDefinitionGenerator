@@ -1,5 +1,5 @@
 <?php
-namespace Sule\Tddg;
+namespace Sule\Tdd;
 
 /*
  * This file is part of the Template Data Definition Generator
@@ -12,7 +12,7 @@ namespace Sule\Tddg;
 
 use Illuminate\Support\ServiceProvider;
 
-class TddgServiceProvider extends ServiceProvider
+class TddServiceProvider extends ServiceProvider
 {
 
 	/**
@@ -29,7 +29,7 @@ class TddgServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		$this->package('sule/tddg');
+		$this->package('sule/tdd');
 	}
 
 	/**
@@ -59,7 +59,7 @@ class TddgServiceProvider extends ServiceProvider
 	 */
 	public function provides()
 	{
-		return array('tddg');
+		return array('tdd');
 	}
 
 }
