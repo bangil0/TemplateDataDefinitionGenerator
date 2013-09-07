@@ -185,9 +185,15 @@ class Generator
      * @param  string  $path
      * @param  string  $classSuffix
      * @param  boolean $removeSSuffixFromTableName
+     * @param  boolean $replace
      * @return array
      */
-    public function make($path, $classSuffix, $removeSSuffixFromTableName = false)
+    public function make(
+        $path, 
+        $classSuffix, 
+        $removeSSuffixFromTableName = false, 
+        $replace = false
+    )
     {
         $this->tables = $this->getTables();
 
@@ -197,7 +203,13 @@ class Generator
             foreach ($this->tables as $table) {
                 $errors = array_merge(
                     $errors, 
-                    $this->makeItem($path, current($table), $classSuffix, $removeSSuffixFromTableName)
+                    $this->makeItem(
+                        $path, 
+                        current($table), 
+                        $classSuffix, 
+                        $removeSSuffixFromTableName, 
+                        $replace
+                    )
                 );
             }
         } else {
@@ -214,9 +226,16 @@ class Generator
      * @param  string $name
      * @param  string  $classSuffix
      * @param  boolean $removeSSuffixFromTableName
+     * @param  boolean $replace
      * @return array
      */
-    public function makeItem($path, $name, $classSuffix, $removeSSuffixFromTableName = false)
+    public function makeItem(
+        $path, 
+        $name, 
+        $classSuffix, 
+        $removeSSuffixFromTableName = false, 
+        $replace = false
+    )
     {
         $className = $this->formatName($name, $removeSSuffixFromTableName);
 
@@ -248,10 +267,12 @@ class Generator
 
         unset($columns);
 
+        // Insert all template methods
         $template = $this->compileTemplate($template, array(
             'methods' => $templateMethod
         ));
 
+        // Insert all template interface methods
         $templateInterface = $this->compileTemplate($templateInterface, array(
             'methods' => $templateMethodInterface
         ));
@@ -261,24 +282,26 @@ class Generator
 
         $errors = array();
 
+        // Create the template class
         $filePath = $path.'/'.$className.$classSuffix.'.php';
-        
-        if ( ! $this->getFile()->exists($filePath)) {
+
+        if ($this->getFile()->exists($filePath) and ! $replace) {
+            $errors[] = $filePath.' is already exist.';
+        } else {
             if (false === $this->getFile()->put($filePath, $template)) {
                 $errors[] = 'Unable to create '.$filePath;
             }
-        } else {
-            $errors[] = $filePath.' is already exist.';
         }
 
+        // Create the template interface
         $filePath = $path.'/'.$className.'Interface'.$classSuffix.'.php';
 
-        if ( ! $this->getFile()->exists($filePath)) {
+        if ($this->getFile()->exists($filePath) and ! $replace) {
+            $errors[] = $filePath.' is already exist.';
+        } else {
             if (false === $this->getFile()->put($filePath, $templateInterface)) {
                 $errors[] = 'Unable to create '.$filePath;
             }
-        } else {
-            $errors[] = $filePath.' is already exist.';
         }
 
         return $errors;

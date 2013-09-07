@@ -69,11 +69,18 @@ class TddGeneratorCommand extends Command
         $templateMethodInterface    = $this->option('templateMethodInterface');
         $classSuffix                = $this->option('classSuffix');
         $removeSSuffixFromTableName = $this->option('removeSSuffixFromTableName');
+        $replace                    = $this->option('replace');
 
         if ($removeSSuffixFromTableName == 'Yes') {
             $removeSSuffixFromTableName = true;
         } else {
             $removeSSuffixFromTableName = false;
+        }
+
+        if ($replace == 'Yes') {
+            $replace = true;
+        } else {
+            $replace = false;
         }
 
         $generator = $this->getGenerator();
@@ -85,7 +92,12 @@ class TddGeneratorCommand extends Command
             $templateMethodInterface
         );
 
-        $this->printResult($generator->make($path, $classSuffix, $removeSSuffixFromTableName), $path);
+        $this->printResult($generator->make(
+            $path, 
+            $classSuffix, 
+            $removeSSuffixFromTableName, 
+            $replace
+        ), $path);
 
         unset($generator);
     }
@@ -173,6 +185,13 @@ class TddGeneratorCommand extends Command
                 null, 
                 InputOption::VALUE_OPTIONAL, 
                 'Remove last "s" char from each table name word? Yes | No.', 
+                'No'
+            ),
+            array(
+                'replace', 
+                null, 
+                InputOption::VALUE_OPTIONAL, 
+                'Replace existing classes? Yes | No.', 
                 'No'
             )
         );
