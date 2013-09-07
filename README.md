@@ -24,6 +24,8 @@ That's it! You're all set to go. Run the `artisan` command from the Terminal to 
 
 ## Usage
 
+All classes will be created under '/app/templates' folder by default, so make sure you had the required folder, but you can specify the folder path as you wish.
+
 Use following command to check all available options.
 
     php artisan generate:tdd --help
