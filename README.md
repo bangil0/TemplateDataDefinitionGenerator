@@ -1,4 +1,8 @@
-a Laravel 4 Package to generate Template Data Definition classes from existing database tables
+a Laravel 4 Package to generate Template Data Definition classes from existing database tables. The generated classes will be very useful in your html view. This will make you to stop assigning a lot of variables to your view via controller.
+
+You will just need to get one or many data from your database table via model, instantiate and assign the model to the template class that having the same name with your table / model, then assign the template class to the view.
+
+This still need some work to do, to make the template data definition easy to use.
 
 ## Installation
 
@@ -29,3 +33,7 @@ All classes will be created under '/app/templates' folder by default, so make su
 Use following command to check all available options.
 
     php artisan generate:tdd --help
+
+## Work to do
+
+Detect related table, so we can use the related table data directly without have to assign them in the controller.
