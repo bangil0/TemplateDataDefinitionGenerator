@@ -38,7 +38,9 @@ Let see how we going to use it in the view (I'm using Twig template engine in be
 
 You can also create process in template class method for on-demand formating and just pass the argument via the view
 
-    <div><img src="{{ user.photo('small') }}" alt="" /></div>
+    <div><img src="{{ user.photo('small').src }}" alt="" /></div>
+
+Above 'photo' method receive 'small' argument, get data needed, and return a object / array (Twig treat your array as object in the view). So the '.src' above return value from object property / array key value.
 
 ## Installation
 
