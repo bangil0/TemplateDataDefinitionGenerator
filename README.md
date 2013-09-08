@@ -20,7 +20,7 @@ Open the template class, then you will see below line of codes:
 
 So make sure you are having the same class name, or just modify the above line of codes regarding your existing model class name.
 
-Now get a row data from your "user" table using your model
+Now get a row data from your "user" table using your model, and assign the template class to the view
 
     $user = User::find(1); // 1 is the id of the user data row
 
@@ -30,6 +30,15 @@ Now get a row data from your "user" table using your model
     View::make('your_view_name', array(
         'user' => $user
     ));
+
+Let see how we going to use it in the view (I'm using Twig template engine in below example)
+
+    <div>User ID : {{ user.id }}</div>
+    <div>User Email : {{ user.email }}</div>
+
+You can also create process in template class method for on-demand formating and just pass the argument via the view
+
+    <div><img src="{{ user.photo('small') }}" alt="" /></div>
 
 ## Installation
 
