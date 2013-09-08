@@ -85,6 +85,13 @@ class Generator
     protected $tables;
 
     /**
+     * The compiled table list
+     *
+     * @var array
+     */
+    protected $compiledTables;
+
+    /**
      * Constructor
      *
      * @param  Illuminate\Database\ConnectionResolverInterface $db
@@ -195,11 +202,13 @@ class Generator
         $replace = false
     )
     {
+        // Get all available tables in database
         $this->tables = $this->getTables();
 
         $errors = array();
 
         if ( ! empty($this->tables)) {
+            // Compile all tables
             foreach ($this->tables as $table) {
                 $errors = array_merge(
                     $errors, 
@@ -220,7 +229,7 @@ class Generator
     }
 
     /**
-     * Compile a template and generate
+     * Compile a template and generate related
      *
      * @param  string $path
      * @param  string $name
@@ -237,7 +246,7 @@ class Generator
         $replace = false
     )
     {
-        $className = $this->formatName($name, $removeSSuffixFromTableName);
+        $className = $this->formatName($name, $removeSSuffixFromTableName, true);
 
         $data = array(
             'model'       => $className,
@@ -250,9 +259,10 @@ class Generator
         $templateMethod          = '';
         $templateMethodInterface = '';
 
+        // Get all available columns in table
         $columns = $this->getColumns($name);
 
-        // Generate all the methods
+        // Generate all the methods for each table column
         if ( ! empty($columns)) {
             foreach ($columns as $column) {
                 $data = array(
@@ -293,6 +303,11 @@ class Generator
             }
         }
 
+        // Collect all compiled classes referenced by the table name
+        if (empty($errors)) {
+            $this->compiledTables[$name] = $className.$classSuffix;
+        }
+
         // Create the template interface
         $filePath = $path.'/'.$className.'Interface'.$classSuffix.'.php';
 
@@ -312,9 +327,10 @@ class Generator
      *
      * @param  string  $name
      * @param  boolean $removeSSuffixFromTableName
+     * @param  boolean $forMethod
      * @return string
      */
-    protected function formatName($name, $removeSSuffixFromTableName = false)
+    protected function formatName($name, $removeSSuffixFromTableName = false, $forClass = false)
     {
         $name = ucwords(str_replace('_', ' ', $name));
 
@@ -326,7 +342,9 @@ class Generator
             }
         }
 
-        $words[0] = strtolower($words[0]);
+        if ( ! $forClass) {
+            $words[0] = strtolower($words[0]);
+        }
 
         $name = implode(' ', $words);
 
@@ -348,7 +366,7 @@ class Generator
     }
 
     /**
-     * Get all available column in a table
+     * Get all available columns in a table
      *
      * @param  string $tableName
      * @return array
@@ -356,6 +374,23 @@ class Generator
     protected function getColumns($tableName)
     {
         $sql = 'SHOW FIELDS FROM '.$tableName;
+
+        return $this->getDB()->select($sql);
+    }
+
+    /**
+     * Get all available foreign keys in a table
+     *
+     * @param  string $tableName
+     * @return array
+     */
+    protected function getForeignKeys($tableName)
+    {
+        $sql = 'SELECT ';
+        $sql .= 'CONSTRAINT_SCHEMA, CONSTRAINT_NAME, TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_SCHEMA, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME ';
+        $sql .= 'FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE ';
+        $sql .= 'WHERE ';
+        $sql .= 'TABLE_NAME = "'.$tableName.'" AND REFERENCED_TABLE_SCHEMA = "'.$this->getDbName().'"';
 
         return $this->getDB()->select($sql);
     }

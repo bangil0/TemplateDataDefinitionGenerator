@@ -13,6 +13,17 @@ class {{className}}{{classSuffix}} implements {{className}}Interface{{classSuffi
     protected $data;
 
     /**
+     * The example variable cache for each related table template data
+     * Uncomment the variable if you are going to use it
+     * ---------------------------------------------------------------
+     * The related column template data cache.
+     * Make the data does not generated more than once.
+     *
+     * @var mixed
+     */
+    // protected $_relatedTable;
+
+    /**
      * Set the data.
      *
      * @param {{model}} $data
@@ -23,6 +34,26 @@ class {{className}}{{classSuffix}} implements {{className}}Interface{{classSuffi
         $this->data = $data;
     }
     {{methods}}
+
+    /**
+     * The example method each related table template data
+     * Uncomment the method if you are going to use it
+     * ---------------------------------------------------------------
+     * The related column template data.
+     *
+     * @return mixed
+     */
+    // public function relatedTable()
+    // {
+    //     if ( ! is_null($this->data) and is_null($this->_relatedTable)) {
+    //         if (isset($this->data->relatedTable)) {
+    //             $this->_relatedTable = new relatedTable{{classSuffix}};
+    //             $this->_relatedTable->setData($this->data->relatedTable);
+    //         }
+    //     }
+
+    //     return $this->_relatedTable;
+    // }
 
     /**
      * Create a new instance of the given template.

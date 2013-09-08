@@ -15,6 +15,16 @@ interface {{className}}Interface{{classSuffix}}
     {{methods}}
 
     /**
+     * The example method each related table template data
+     * Uncomment the method if you are going to use it
+     * ---------------------------------------------------------------
+     * The related column template data.
+     *
+     * @return mixed
+     */
+    // public function relatedTable();
+
+    /**
      * Create a new instance of the given template.
      *
      * @return {{className}}Template | static

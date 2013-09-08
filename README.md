@@ -2,7 +2,34 @@ a Laravel 4 Package to generate Template Data Definition classes from existing d
 
 You will just need to get one or many data from your database table via model, instantiate and assign the model to the template class that having the same name with your table / model, then assign the template class to the view.
 
+Each generated classes will also having 'interface' class generated.
+
+The nice thing about it, if you need to format some of data before displayed in the view, you can do that easly in the template class method directly, and all of the view using it will be having the same format. No need to edit all controller or class that already make such formating.
+
 This still need some work to do, to make the template data definition easy to use.
+
+## How to use the generated class
+
+In example you are going to use template class for "user" table, then find the generated template class that having the same name with the table (in default having "Template" suffix).
+
+Open the template class, then you will see below line of codes:
+
+    use User; // This the "user" table model class name
+
+    public function setData(User $data)
+
+So make sure you are having the same class name, or just modify the above line of codes regarding your existing model class name.
+
+Now get a row data from your "user" table using your model
+
+    $user = User::find(1); // 1 is the id of the user data row
+
+    $userTemplate = new UserTemplate;
+    $userTemplate->setData($user);
+
+    View::make('your_view_name', array(
+        'user' => $user
+    ));
 
 ## Installation
 

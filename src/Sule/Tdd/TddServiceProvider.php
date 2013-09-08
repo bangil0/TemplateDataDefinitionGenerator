@@ -42,7 +42,12 @@ class TddServiceProvider extends ServiceProvider
 	{
 		$this->app['generate.tdd'] = $this->app->share(function($app)
 		{
-			$generator = new Generators\Generator($app['db'], $app['files']);
+            $generator = new Generators\Generator(
+                $app['db'], 
+                $app['files']
+            );
+
+            unset($connection);
 
 			return new Commands\TddGeneratorCommand($generator);
 		});
