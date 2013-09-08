@@ -1,6 +1,6 @@
 {
     "name": "sule/tdd",
-    "description": "",
+    "description": "a Laravel 4 Package to generate Template Data Definition classes from existing database tables",
     "authors": [
         {
             "name": "Sulaeman",
